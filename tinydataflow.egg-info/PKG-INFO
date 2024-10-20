@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: tinydataflow
-Version: 0.0.4
+Version: 0.0.5
 Summary: biblioteca Python simples e extensível que facilita a criação e execução de pipelines de transformação de dados e automação de processos
 Home-page: https://github.com/ismaelnjr/tinyflow-project.git
 Author: Ismael Nascimento
