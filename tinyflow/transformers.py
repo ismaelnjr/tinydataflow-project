@@ -39,6 +39,15 @@ class EmailSender(DataTransformer):
         return List[Union[str, int, str]]  # Retorna o endereço de e-mail do destinatário e o status do envio de e-mail (erro = 1, ok = 0)
 
     def transform(self, input_data) -> List[Union[str, int, str]]:
+        '''
+        Transforms a dictionary with the recipient's e-mail address, subject, body and attachment path into a tuple with the recipient's e-mail address, the status of the email sending and the error message.
+
+        Args:
+            input_data: A dictionary with the keys 'recipient_email', 'subject', 'body' and optionally 'attachment_path'.
+        Returns:
+            A list with the recipient's e-mail address, the status of the email sending (0 = ok, 1 = error) and the error message.
+        '''
+
         recipient_email = input_data.get('recipient_email')
         subject = input_data.get('subject', self.render_template(self.__subject_template, input_data))
         body = input_data.get('body', self.render_template(self.__emailbody_template, input_data))
@@ -130,13 +139,25 @@ class StrToCSVTransformer(DataTransformer):
     
     @property
     def input_type(self) -> Type:        
-        return list[str]  # Espera uma lista de strings
+        return list[str]  # Espera uma lista de strings, sendo cada string uma linha no arquivo CSV
 
     @property
     def output_type(self) -> Type:
         return str
 
     def transform(self, input_data: list) -> str:
+        """
+        Transforms a list of strings into a CSV file and returns the file path.
+
+        Each string in the input list is written as a separate line in the CSV file.
+        The CSV file is created at the specified output file path.
+
+        Args:
+            input_data: A list of strings, each representing a line to be written to the CSV file.
+
+        Returns:
+            The path to the output CSV file as a string.
+        """
         with open(self.__output_file, 'w', newline='', encoding='utf-8') as csvfile:
             # Criando um objeto writer do módulo csv
             csvwriter = csv.writer(csvfile)
@@ -148,8 +169,17 @@ class StrToCSVTransformer(DataTransformer):
         return self.__output_file
 
 class ListToDictTransformer(DataTransformer):
+    '''
+    The ListToDictTransformer transforms a list of strings into a dictionary with the specified keys in a order provided by the user.
+    '''
     
     def __init__(self, k_names: list[str]):
+        """
+        Creates a ListToDictTransformer object.
+
+        Args:
+            k_names: The list of keys in the order they should be used to create the dictionary from a list of strings.
+        """
         self.__k_names = k_names  
     
     @property
@@ -161,6 +191,15 @@ class ListToDictTransformer(DataTransformer):
         return dict[str]  # Converte em dicinário com valores em strings
 
     def transform(self, input_data: list[str]) -> dict[str]:
+        """
+        Transforms a list of strings into a dictionary with the specified keys in a order provided by the user.
+
+        Args:
+            input_data: A list of strings to be transformed into a dictionary.
+
+        Returns:
+            The dictionary with the specified keys and values from the input_data list.
+        """
         return dict(zip(self.__k_names, input_data))
 
     def setup(self, config: dict):
