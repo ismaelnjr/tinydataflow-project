@@ -23,8 +23,8 @@ class EmailSenderTest(unittest.TestCase):
 
         # Transformador que converte TXT para Excel
         email_sender = EmailSender(
-            emailsender_email='ismaelnjr77@gmail.com',
-            emailsender_password='ncsj eshv pkeo jvvk',
+            emailsender_email=os.getenv('EMAIL_SENDER'),
+            emailsender_password=os.getenv('EMAIL_PASSWORD'),
             emailsender_smtp_port=587,
             emailsender_smtp_server='smtp.gmail.com'
         )
