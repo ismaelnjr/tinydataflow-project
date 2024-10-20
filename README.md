@@ -1,4 +1,4 @@
-TinyFlow é uma biblioteca Python simples e extensível que facilita a criação e execução de pipelines de transformação de dados e automação de processos. Com suporte para conectores de dados e transformadores que vão desde a leitura de arquivos, processamento de linhas, gravação de arquivos CSV até envio de e-mails. O TinyFlow é projetado para ser flexível e modular, permitindo que você defina e execute fluxos de dados personalizados de maneira eficiente.
+TinyDataFlow é uma biblioteca Python simples e extensível que facilita a criação e execução de pipelines de transformação de dados e automação de processos. Com suporte para conectores de dados e transformadores que vão desde a leitura de arquivos, processamento de linhas, gravação de arquivos CSV até envio de e-mails. O TinyFlow é projetado para ser flexível e modular, permitindo que você defina e execute fluxos de dados personalizados de maneira eficiente.
 
 Recursos:
 
@@ -8,18 +8,18 @@ Extensível : Adicione seus próprios conectores e transformadores de maneira si
 
 Instalação:
 
-Você pode instalar o TinyFlow diretamente do repositório ou clonar o projeto para desenvolvimento local:
+Você pode instalar o TinyDataFlow diretamente do repositório ou clonar o projeto para desenvolvimento local:
 
 # Clonando o repositório
-git clone https://github.com/ismaelnjr/tinyflow_project.git
-cd tinyflow
+git clone https://github.com/ismaelnjr/tinydataflow_project.git
+cd tinydataflow
 
 # Instalando dependências
-pip install -r requirements.txt
+pip install tinydataflow -r requirements.txt
 
 Dependências
 
-O TinyFlow utiliza as seguintes bibliotecas:
+O TinyDataFlow utiliza as seguintes bibliotecas:
 
 Python 3.8+
 smtplib- Envio de e-mails via SMTP.

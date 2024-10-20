@@ -8,9 +8,9 @@ os.chdir(test_root)
 sys.path.insert(0, os.path.dirname(test_root))
 sys.path.insert(0, test_root)
 
-from tinyflow import TinyFlow
-from tinyflow import EmailSender, ListToDictTransformer
-from tinyflow import CSVLineReader
+from tinydataflow import TinyDataFlow
+from tinydataflow import EmailSender, ListToDictTransformer
+from tinydataflow import CSVLineReader
 
 
 class EmailSenderTest(unittest.TestCase):
@@ -42,7 +42,7 @@ class EmailSenderTest(unittest.TestCase):
         }
 
         try:
-            app = TinyFlow(csvReader, [csv2dict, email_sender])
+            app = TinyDataFlow(csvReader, [csv2dict, email_sender])
             app.setup(config)
             app.run()
             print(f"Resultados: {app.outputs}")

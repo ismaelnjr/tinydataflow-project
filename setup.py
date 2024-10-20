@@ -6,13 +6,13 @@ from setuptools import setup, find_packages
 from setuptools import setup
 from setuptools import find_packages
 
-from tinyflow import __version__
+from tinydataflow import __version__
     
 def parse_requirements(filename):
     with open(filename, encoding='utf-16') as f:
         return f.read().splitlines()
 
-setup(name='tinyflow',
+setup(name='tinydataflow',
     version=__version__,
     license='MIT',
     author='Ismael Nascimento',

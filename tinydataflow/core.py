@@ -2,13 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Type
 
 
-def is_elem_instance(elem, expected_type):
-    # Verifica se 'elem' é uma lista
-    if isinstance(elem, list):
-        # Verifica se todos os elementos da lista são do tipo esperado
-        return all(isinstance(item, expected_type) for item in elem)
-    return False
-
 class DataFlowStrategy(ABC):
     
     @property
@@ -59,7 +52,7 @@ class DataTransformerException(Exception):
 
 
 # Classe TinyFlow que utiliza um conector de dados e uma sequência de transformadores que serão executados na ordem determinada. 
-class TinyFlow:
+class TinyDataFlow:
     
     __flow_results: list = []
     

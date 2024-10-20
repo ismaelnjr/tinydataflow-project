@@ -1,4 +1,4 @@
-from tinyflow.base import DataConnector, DataConnectorException
+from tinydataflow.core import DataConnector, DataConnectorException
 from typing import List, Type
 from pathlib import Path
 import os

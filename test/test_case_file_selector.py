@@ -8,9 +8,9 @@ os.chdir(test_root)
 sys.path.insert(0, os.path.dirname(test_root))
 sys.path.insert(0, test_root)
 
-from tinyflow import TinyFlow
-from tinyflow import StrToCSVTransformer
-from tinyflow import FileSelector
+from tinydataflow import TinyDataFlow
+from tinydataflow import StrToCSVTransformer
+from tinydataflow import FileSelector
 
 class FileSelTest(unittest.TestCase):
 
@@ -20,7 +20,7 @@ class FileSelTest(unittest.TestCase):
         str_to_csv = StrToCSVTransformer()
         # Escreve o resultado dos arquivos selecionados no arquivo CSV
         try:
-            app = TinyFlow(fileReader, [str_to_csv])
+            app = TinyDataFlow(fileReader, [str_to_csv])
             app.setup()
             app.run()    
             print(f"Resultados: {app.outputs}")

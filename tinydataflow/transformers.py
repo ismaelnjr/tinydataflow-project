@@ -1,4 +1,4 @@
-from tinyflow.base import DataTransformer, DataTransformerException
+from tinydataflow.core import DataTransformer, DataTransformerException
 from typing import List, Type, Union
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
