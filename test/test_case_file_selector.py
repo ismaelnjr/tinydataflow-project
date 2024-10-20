@@ -8,9 +8,9 @@ os.chdir(test_root)
 sys.path.insert(0, os.path.dirname(test_root))
 sys.path.insert(0, test_root)
 
-from tinyflow.base import TinyFlow
-from tinyflow.transformers import StrToCSVTransformer
-from tinyflow.connectors import FileSelector
+from tinyflow import TinyFlow
+from tinyflow import StrToCSVTransformer
+from tinyflow import FileSelector
 
 class FileSelTest(unittest.TestCase):
 

@@ -8,10 +8,9 @@ os.chdir(test_root)
 sys.path.insert(0, os.path.dirname(test_root))
 sys.path.insert(0, test_root)
 
-from tinyflow.base import TinyFlow
-from tinyflow.transformers import EmailSender, ListToDictTransformer
-from tinyflow.connectors import CSVLineReader
-from typing import List, Type
+from tinyflow import TinyFlow
+from tinyflow import EmailSender, ListToDictTransformer
+from tinyflow import CSVLineReader
 
 
 class EmailSenderTest(unittest.TestCase):
