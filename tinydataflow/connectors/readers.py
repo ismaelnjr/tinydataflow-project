@@ -1,34 +1,13 @@
 from tinydataflow.core import DataConnector, DataConnectorException
 from typing import List, Type
 from pathlib import Path
-import os
 import csv
 
-
-class FileSelector(DataConnector):
     
-    def __init__(self, from_path: str, file_ext: str = '*.*'):
-        self.from_path = from_path
-        self.file_ext = file_ext
-    
-    @property
-    def output_type(self) -> Type:
-        return list # Gera uma lista de nomes de arquivos a partir de um diretorio
-        
-    def read(self) -> list:
-        try:
-            file_list = []
-
-            if os.path.isdir(self.from_path):                
-                for file_path in Path(self.from_path).rglob(self.file_ext):
-                    file_list.append(str(file_path)) # file_list.append(file_path) 
-            return file_list
-        except IOError as e:
-            raise DataConnectorException(e.message)
-        finally:
-            self.close()
-        
 class FileReader(DataConnector):
+    '''
+    The FileReader returns a list of lines from a given text file.
+    '''
     
     def __init__(self, filename: str):
         self.filename = filename
@@ -49,7 +28,52 @@ class FileReader(DataConnector):
             self.close()
 
 
-class CSVLineReader(DataConnector):
+class LineReader(DataConnector):
+    '''
+    The LineReader reads a line from a given text file provided in the constructor.
+    Each line can be readed and iterated sequentially to be transmitted to the next transformer in each iteration
+    '''
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.file = None        
+    
+    def setup(self, params):
+        """Abre o arquivo de texto no modo leitura."""
+        try:
+            self.file = open(self.file_path, 'r', encoding=params.get('encoding', 'utf-8'))
+        except FileNotFoundError:
+            raise DataConnectorException(f"Arquivo {self.file_path} não encontrado.")    
+    
+    @property
+    def output_type(self) -> Type:
+        """Retorna o tipo de saída que este conector gera (lista de strings)."""
+        return str  # Uma linha de um arquivo TXT
+        
+    def read(self) -> str:
+        """Lê uma linha do arquivo de texto."""
+        if self.file is None:
+            raise DataConnectorException("Arquivo não foi aberto corretamente.")
+        
+        line = self.file.readline()
+        
+        if line:
+            return line.strip()  # Retorna a linha sem os espaços extras
+        else:
+            self.set_eof(True)  # Marca o fim do arquivo
+            return None
+
+    def close(self):
+        """Fecha o arquivo."""
+        if self.file:
+            self.file.close()
+        self.set_eof(True)
+
+
+class CSVReader(DataConnector):
+    '''
+    The CSVReader reads a line from a given CSV file provided in the constructor.
+    Each line can be readed and iterated sequentially to be transmitted to the next transformer in each iteration
+    '''
     def __init__(self, file_path: str):
         self.file_path = file_path
         self.file = None

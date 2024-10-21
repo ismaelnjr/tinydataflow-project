@@ -9,16 +9,17 @@ sys.path.insert(0, os.path.dirname(test_root))
 sys.path.insert(0, test_root)
 
 from tinydataflow import TinyDataFlow
-from tinydataflow import EmailSender, ListToDictTransformer
-from tinydataflow import CSVLineReader
+from tinydataflow.transformers.senders import EmailSender
+from tinydataflow.transformers.basic import ListToDict
+from tinydataflow.connectors.readers import CSVReader
 
 
 class EmailSenderTest(unittest.TestCase):
 
     def test_email_sender(self):
         
-        csvReader = CSVLineReader('email_list.txt')
-        csv2dict = ListToDictTransformer(k_names=['recipient_name', 'recipient_email', 'order_id', 'tracking_code', 'attachment_path']) 
+        csvReader = CSVReader('email_list.txt')
+        csv2dict = ListToDict(k_names=['recipient_name', 'recipient_email', 'order_id', 'tracking_code', 'attachment_path']) 
 
         # Transformador que converte TXT para Excel
         email_sender = EmailSender(
