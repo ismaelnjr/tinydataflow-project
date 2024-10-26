@@ -17,49 +17,65 @@ class DataFlowStrategy(ABC):
  
         
 class DataConnector(DataFlowStrategy):
-
-    __eof = False
-
+   
     @abstractmethod
     def read(self) -> any:
-        """Lê a fonte de dados."""        
+        """Lê a fonte de dados."""
         pass
     
+    @abstractmethod
     def eof(self):
-        return self.__eof
-    
-    def set_eof(self, eof: bool):
-        self.__eof = eof
+        pass
 
     def close(self):
         """Fecha a conexão com a fonte de dados."""
-        self.set_eof(True)
+        pass
 
 
-class DataConnectorException(Exception):
-    pass
-
-# Definindo a interface comum para as estratégias com input/output types
-class DataTransformer(DataFlowStrategy):    
+class DataTransformer(DataFlowStrategy):   
+    
+    _next_transformer = None 
+    
+    def set_next(self, transformer: "DataTransformer") -> "DataTransformer":
+        """Define o próximo transformador da cadeia."""
+        self._next_transformer = transformer
+        return transformer
 
     @abstractmethod
-    def transform(self, input_data:  any) ->  any:
-        """Transforma o input_data e retorna o resultado."""
-        pass    
+    def handle(self, input_data: any) -> any:
+        """Método abstrato que deve ser implementado nas subclasses para transformar o dado de entrada."""
+        pass
 
-class DataTransformerException(Exception):
-    pass
-
+    def push(self, output_data: any) -> any:
+        """Propaga o dado de saída para o próximo transformador da cadeia."""
+        if self._next_transformer:
+            return self._next_transformer.handle(output_data)
+        else:
+            return output_data  
+        
+    def close(self):
+        """Fecha a conexão com a fonte de dados."""
+        pass
 
 # Classe TinyFlow que utiliza um conector de dados e uma sequência de transformadores que serão executados na ordem determinada. 
 class TinyDataFlow:
     
-    __flow_results: list = []
+    __flow_outputs = []
     
     def __init__(self, connector: DataConnector, transformers: List[DataTransformer]):        
         self.transformers = transformers
         self.connector = connector
         self._validate_transformer_sequence()
+
+    @property
+    def outputs(self) -> List[any]:
+        """Retorna os resultados do fluxo após as transformações."""
+        if len(self.__flow_outputs) == 0:
+            return None 
+        elif len(self.__flow_outputs) == 1:
+            return self.__flow_outputs[0]
+        else:
+            return self.__flow_outputs
 
     def _validate_transformer_sequence(self):
         
@@ -68,48 +84,51 @@ class TinyDataFlow:
             current_transformer = self.transformers[i]
             
             if i == 0:
-                if current_transformer.input_type != self.connector.output_type:
+                if current_transformer.input_type != any and current_transformer.input_type != self.connector.output_type:
                     raise TypeError(f"Incompatibilidade entre conector e primeiro transformador: "
-                                    f"{current_transformer.__class__.__name__} produz {current_transformer.output_type.__name__}, "
-                                    f"mas {self.connector.__class__.__name__} espera {self.connector.input_type.__name__} como entrada.")
+                                    f"{self.connector.__class__.__name__} produz {self.connector.output_type.__name__} como saída."
+                                    f" Mas {current_transformer.__class__.__name__} espera {current_transformer.input_type.__name__} como entrada.")                                    
             
             next_transformer = self.transformers[i + 1]
+                    
+            if current_transformer.output_type != any and next_transformer.input_type != any and current_transformer.output_type != next_transformer.input_type:
+                raise TypeError(f"Incompatibilidade entre tipos de dados de entrada/saída: "
+                    f"{current_transformer.__class__.__name__} produz {current_transformer.output_type.__name__} com saída, "
+                    f"mas {next_transformer.__class__.__name__} espera {next_transformer.input_type.__name__} como entrada.")
+            current_transformer.set_next(next_transformer)
 
-            if current_transformer.output_type != next_transformer.input_type:
-                raise TypeError(f"Incompatibilidade entre transformadores: "
-                                f"{current_transformer.__class__.__name__} produz {current_transformer.output_type.__name__}, "
-                                f"mas {next_transformer.__class__.__name__} espera {next_transformer.input_type.__name__} como entrada.")
 
     def run(self) -> None:
-        """Executa o fluxo de leitura e transformação."""
+        """Executa o fluxo de leitura da fonte de dados e transformação."""
+        current_output = None
         try:
             while not self.connector.eof():
-                current_output = self.connector.read()
-                if not current_output:
+                input_data = self.connector.read()
+                if not input_data:
                     break
-                for transformer in self.transformers:
-                    current_output = transformer.transform(current_output)
+                if len(self.transformers) > 0:
+                    current_output = self.transformers[0].handle(input_data)                 
+                if current_output is not None:
+                    self.__flow_outputs.append(current_output)            
                 
-                self.__flow_results.append(current_output)
         except DataConnectorException as e:
             raise e
         finally:
             self.connector.close()
+            for transformer in self.transformers:
+                transformer.close()
         
-    def setup(self, config: dict = {}):
+    def setup(self, params: dict = {}):
         """Configura os parâmetros do conector e dos transformadores."""
         if self.connector is not None:  
-            self.connector.setup(config)
+            self.connector.setup(params)
             
         for transformer in self.transformers:
-            transformer.setup(config)
+            transformer.setup(params)
 
-    @property
-    def outputs(self) -> any:
-        """Retorna os resultados do fluxo após as transformações."""
-        if len(self.__flow_results) == 0:
-            return None 
-        elif len(self.__flow_results) == 1:
-            return self.__flow_results[0]
-        else:       
-            return self.__flow_results
+
+class DataConnectorException(Exception):
+    pass
+
+class DataTransformerException(Exception):
+    pass

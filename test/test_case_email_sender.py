@@ -18,7 +18,7 @@ class EmailSenderTest(unittest.TestCase):
 
     def test_email_sender(self):
         
-        csvReader = CSVReader('email_list.txt')
+        csvReader = CSVReader('etc\\email_list.txt')
         csv2dict = ListToDict(k_names=['recipient_name', 'recipient_email', 'order_id', 'tracking_code', 'attachment_path']) 
 
         # Transformador que converte TXT para Excel
@@ -50,6 +50,7 @@ class EmailSenderTest(unittest.TestCase):
             self.assertEqual(app.outputs[1], 0)
         except TypeError as e:
             print(f"Erro de compatibilidade: {e}")
-               
+            raise e
+           
 if __name__ == '__main__':
     unittest.main()

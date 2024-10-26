@@ -1,0 +1,5 @@
+etc\copy.txt
+etc\email_list.txt
+etc\output.txt
+etc\selected.txt
+etc\writer.txt

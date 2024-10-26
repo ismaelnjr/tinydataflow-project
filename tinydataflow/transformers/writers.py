@@ -1,13 +1,40 @@
 from tinydataflow.core import DataTransformer, DataTransformerException
 from typing import List, Type, Union
 
+
+class StreamWriter(DataTransformer):
+    
+    _output_stream = None
+    
+    def __init__(self, output_stream):
+        super().__init__()
+        self._output_stream = output_stream  # Objeto stream para a escrita
+
+    def handle(self, input_data: any) -> any:
+        """Escreve o dado de entrada no stream e propaga o resultado para o próximo transformador."""
+        # Converte o input_data para string para garantir a compatibilidade com o método write
+        data_to_write = str(input_data)
+        data_to_write = data_to_write + '\n' if not data_to_write[len(data_to_write) - 1] in ['\n', '\r'] else data_to_write
+        self._output_stream.write(data_to_write)  # Escreve no stream com uma nova linha
+        
+        # Propaga para o próximo transformador, caso exista
+        return self.push(input_data)
+        
+    @property
+    def output_stream(self):
+        return self._output_stream
+    
+    def close(self):
+        if hasattr(self._output_stream, 'close') and callable(self._output_stream.close):
+            self._output_stream.close()
        
-class LineWriter(DataTransformer):
+class LineWriter(StreamWriter):
     '''
     The LineWriter appends a new line to the end of file provided by the user
     '''
-    def __init__(self, output_file: str):
-        self.__output_file = output_file
+    def __init__(self, output_file: str):     
+        self._output_file = output_file   
+        super().__init__(open(output_file, "a"))
     
     @property
     def input_type(self) -> Type:        
@@ -21,45 +48,13 @@ class LineWriter(DataTransformer):
         """Opcionalmente, configurar o arquivo de saída (por exemplo, modo de abertura)."""
         open_mode = params.get('open_mode', 'a')  # 'a' para adicionar ou 'w' para sobrescrever
         if open_mode == 'w':
-            with open(self.__output_file, open_mode) as f:
+            with open(self._output_file, open_mode) as f:
                 pass  # Limpa o arquivo se estiver no modo 'w'
             
-    def transform(self, input_data: str) -> str:
-
+    def handle(self, input_data: str):
         try:
-            with open(self.__output_file, 'a') as f:
-                f.write(input_data + '\n')            
-            return input_data
+            data_to_write = input_data + "\n" if not input_data[len(input_data) - 1] in ['\n', '\r'] else input_data
+            self.output_stream.write(data_to_write)  # Escreve no stream com uma nova linha
+            return self.push(input_data)
         except Exception as e:
-            raise DataTransformerException(f"Failed to write {self.__output_file}: {str(e)}")
-
-class FileWriter(DataTransformer):
-    '''
-    The FileWriter writes a list of lines to the end of a file provided by the user
-    '''
-    def __init__(self, output_file: str):
-        self.__output_file = output_file
-    
-    @property
-    def input_type(self) -> Type:        
-        return list[str]  # Espera uma lista de strings para ser escrita no arquivo
-
-    @property
-    def output_type(self) -> Type:
-        return str # retorna o nome do arquivo
-
-    def setup(self, params: dict):
-        """Opcionalmente, configurar o arquivo de saída (por exemplo, modo de abertura)."""
-        open_mode = params.get('open_mode', 'a')  # 'a' para adicionar ou 'w' para sobrescrever
-        if open_mode == 'w':
-            with open(self.__output_file, open_mode) as f:
-                pass  # Limpa o arquivo se estiver no modo 'w'
-            
-    def transform(self, input_data: str) -> str:
-        try:
-            with open(self.__output_file, 'a') as f:
-                for line in input_data:
-                    f.write(line + '\n')
-        except Exception as e:
-            raise DataTransformerException(f"Erro ao escrever no arquivo {self.__output_file}: {str(e)}")
-        return self.__output_file
+            raise DataTransformerException(f"Failed to write to file: {self._output_file}: {str(e)}")

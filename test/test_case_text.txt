@@ -1,4 +1,0 @@
-This file is a text file 
-for testing the LineReader  
-that will read the lines individually 
-and transmit to subsequent transformers

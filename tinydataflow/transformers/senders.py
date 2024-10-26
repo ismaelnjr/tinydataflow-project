@@ -31,15 +31,17 @@ class EmailSender(DataTransformer):
 
     @property    
     def input_type(self) -> Type:
-        return dict[str]
+        return dict # Recebe um dicionário com as chaves 'recipient_email', 'subject', 'body' e 'attachment_path'
     
     @property
     def output_type(self) -> Type:
-        return List[Union[str, int, str]]  # Retorna o endereço de e-mail do destinatário e o status do envio de e-mail (erro = 1, ok = 0)
+        return list  # Retorna o endereço de e-mail do destinatário e o status do envio de e-mail (erro = 1, ok = 0)
 
-    def transform(self, input_data) -> List[Union[str, int, str]]:
+    def handle(self, input_data) -> List[Union[str, int, str]]:
         '''
-        Transforms a dictionary with the recipient's e-mail address, subject, body and attachment path into a tuple with the recipient's e-mail address, the status of the email sending and the error message.
+        Handles a dictionary with the recipient's e-mail address, subject, 
+        body and attachment path into a tuple with the recipient's e-mail address, 
+        the status of the email sending and the error message.
 
         Args:
             input_data: A dictionary with the keys 'recipient_email', 'subject', 'body' and optionally 'attachment_path'.
@@ -127,5 +129,5 @@ class EmailSender(DataTransformer):
         """
         template = string.Template(template)
         return template.safe_substitute(context)
-        
+    
  
