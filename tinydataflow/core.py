@@ -68,7 +68,7 @@ class TinyDataFlow:
         self._validate_transformer_sequence()
 
     @property
-    def outputs(self) -> List[any]:
+    def outputs(self) -> any:
         """Retorna os resultados do fluxo após as transformações."""
         if len(self.__flow_outputs) == 0:
             return None 

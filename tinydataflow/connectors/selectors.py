@@ -10,13 +10,13 @@ class DataSelector(DataConnector):
     _eof = False
     
     @abstractmethod
-    def select(self, criteria: dict) -> any:
+    def select(self, criteria: any) -> any:
         pass
     
     def eof(self):
         return self._eof
     
-    def close(self):
+    def close(self):        
         self._eof = True
     
 class FileListSelector(DataSelector):

@@ -21,10 +21,6 @@ class ListToElem(DataTransformer):
             outputs.append(self.push(elem))
         return outputs       
 
-    def setup(self, config: dict):
-        pass  # Nenhuma configuração necessária para este exemplo
-    
-
 class ListToDict(DataTransformer):
     '''
     The ListToDict transforms a list of strings into a dictionary with the specified keys in a order provided by the user.
@@ -50,5 +46,3 @@ class ListToDict(DataTransformer):
     def handle(self, input_data: list[str]) -> dict[str]:
         return self.push(dict(zip(self.__k_names, input_data)))
 
-    def setup(self, config: dict):
-        pass  # Nenhuma configuração necessária para este exemplo
